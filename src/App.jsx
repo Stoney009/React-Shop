@@ -9,8 +9,7 @@ const App = () => {
   return (
     <Container>
       <Header />
-      <CategorySection />
-      <ProductSection/>
+      
       <Footer />
     </Container>
   );
