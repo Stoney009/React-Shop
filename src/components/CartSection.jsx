@@ -1,8 +1,10 @@
 import React from "react";
 import Cart from "./Cart";
-import carts from "../data/carts";
+import useCartStore from "../store/useCartStore";
 
 const CartSection = () => {
+
+  const { carts } = useCartStore();
   
   return (
     <div className="  flex-grow ">

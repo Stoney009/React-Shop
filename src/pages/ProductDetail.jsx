@@ -1,18 +1,29 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import products from "../data/products";
 import Rating from "../components/Rating";
 import Breadcrumb from "../components/Breadcrumb";
+import useProductStore from "../store/useProductStore";
+import useCartStore from "../store/useCartStore";
 
 const ProductDetail = () => {
+  const { products } = useProductStore();
+  const { addCart, carts } = useCartStore();
   const { productId } = useParams();
   console.log(productId);
 
   const currentProduct = products.find((product) => product.id == productId);
   console.log(currentProduct);
+  const handleDetailAdd = () => {
+    const newCart = {
+      id: Date.now(),
+      productId: currentProduct.id,
+      quantity: 1,
+    };
+    addCart(newCart);
+  };
   return (
     <>
-      <Breadcrumb currentPage="Product Detail"/>
+      <Breadcrumb currentPage="Product Detail" />
       <div className="border border-black py-5 px-10 my-4 ">
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-2  justify-between items-center">
           <div className=" ">
@@ -37,12 +48,22 @@ const ProductDetail = () => {
             <Rating rate={currentProduct.rating.rate} />
             <div className=" flex justify-between h-full  w-full mt-6">
               <p className="text-xl font-bold ">${currentProduct.price}</p>
-              <Link
-                to={"/my-cart"}
-                className="px-4 py-2 border border-black  text-xs  rounded-lg hover:bg-black hover:text-white duration-200 transition-all ease-in-out"
-              >
-                Add to Cart
-              </Link>
+              {carts.find((cart) => cart.productId == currentProduct.id) ? (
+                <button
+                  className={"bg-black px-2 py-1 rounded-md text-sm text-white"}
+                >
+                  Added
+                </button>
+              ) : (
+                <button
+                  onClick={handleDetailAdd}
+                  className={
+                    "border active:scale-105 duration-150 border-black px-2 py-1 rounded-md text-sm"
+                  }
+                >
+                  Add to Cart
+                </button>
+              )}
             </div>
           </div>
         </div>

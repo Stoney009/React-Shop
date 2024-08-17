@@ -1,7 +1,8 @@
 import React from "react";
 import Rating from "./Rating";
-import { Link, NavLink } from "react-router-dom";
-import carts from "../data/carts";
+import useCartStore from "../store/useCartStore";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ProductCard = ({
   product: {
@@ -14,31 +15,59 @@ const ProductCard = ({
     rating: { rate, count },
   },
 }) => {
+  const { carts, addCart } = useCartStore();
+  const handleAddCart = (e) => {
+    const newCart = {
+      id: Date.now(),
+      productId: id,
+      quantity: 1,
+    };
+    e.stopPropagation();
+    addCart(newCart);
+    toast.success('Successfully added!');
+  };
+  const navigate = useNavigate();
+  const handleDetail = () => {
+    navigate(`/product-detail/${id}`);
+  };
+  const handleAdded = (e) => {
+    e.stopPropagation();
+    toast.success('This item is already added!',{
+      position: 'bottom-left',
+    });
+  };
   return (
-    <Link
-      to={`/product-detail/${id}`}
+    <div
+      onClick={handleDetail}
       className="border  border-black p-4  rounded-md flex flex-col  items-start"
     >
       <img src={image} className=" h-24 md:h-28 mb-3 " alt="" />
       <h2 className="font-semibold mb-1 text-lg line-clamp-1"> {title}</h2>
       <p className="line-clamp-2 tex-xs text-gray-500 mb-4">{description}</p>
-      <div>
-        <Rating rate={rate} />
-      </div>
+
+      <Rating rate={rate} />
+
       <div className="flex justify-between w-full items-baseline mt-auto">
         <p>${price}</p>
-        {carts.find((cart) => cart.product.id == id) ? (
-          <p className="px-4 py-2 border border-black  text-xs  rounded-lg bg-black text-white duration-200 transition-all ease-in-out">
+        {carts.find((cart) => cart.productId == id) ? (
+          <button
+            onClick={handleAdded}
+            className={"bg-black px-2 py-1 rounded-md text-sm text-white"}
+          >
             Added
-          </p>
+          </button>
         ) : (
-          <p to={"/my-cart"} className="px-4 py-2 border border-black  text-xs  rounded-lg hover:bg-black hover:text-white duration-200 transition-all ease-in-out">Add to cart</p>
+          <button
+            onClick={handleAddCart}
+            className={
+              "border active:scale-105 duration-150 border-black px-2 py-1 rounded-md text-sm"
+            }
+          >
+            Add to Cart
+          </button>
         )}
-        {/* <Link to={"/my-cart"} className="">
-          Add to Cart
-        </Link> */}
       </div>
-    </Link>
+    </div>
   );
 };
 
